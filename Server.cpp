@@ -9,10 +9,15 @@
 #include <arpa/inet.h>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <experimental/filesystem>
+#include <filesystem>
 
 #include "Server.hpp"
 #include "http_request.hpp"
+
+//namespace fs = std::experimental::filesystem;
+//namespace bfs = boost::filesystem;
 
 //static std::string getDateTime() {
 //    char buffer[100] = {0};
@@ -55,19 +60,21 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
     std::cout << "Connection from " << ip << " request url " << request.url() << std::endl;
 
-    if (request.type() != http_request::enumType::GET || request.type() != http_request::enumType::POST || request.type() != http_request::enumType::PUT || request.type() != http_request::enumType::DELETE)
+    if (request.type() != http_request::enumType::GET && request.type() != http_request::enumType::POST && request.type() != http_request::enumType::PUT && request.type() != http_request::enumType::DELETE)
     {
         std::cout << "Unknown type of request. Not support!" << std::endl;
+        return ;
     }
 
     ++get_request_count;
+    //html_data = "index.html";
 
     switch (request.url().length()) {
         case 1: // "/"
         {
             if (request.url() == "/") {
                 std::stringstream response;
-                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
+                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
                          << html_data.size() << "\r\n\r\n";
 
                 int sended = 0;
@@ -79,7 +86,26 @@ void Server::clientProcessing(int socket_client, std::string ip) {
                     sended = write(socket_client, html_data.data(), html_data.size());
                 }
             }
-            break;
+            break ;
+        }
+        case 12: //"favicon.ico"
+        {
+            if (request.url() == "/favicon.ico")
+            {
+                std::stringstream response;
+                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
+                         << fav_icon_buffer.size() << "\r\n\r\n";
+                int sended = 0;
+                //status OK
+                sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
+
+                if (sended > 0) {
+                    //send index.html
+                    sended = write(socket_client, fav_icon_buffer.data(), fav_icon_buffer.size());
+                }
+
+            }
+            break ;
         }
     }
 
@@ -90,6 +116,43 @@ Server::~Server() {}
 Server::Server(int serverPort) : port(serverPort) {}
 
 bool Server::serverStart() {
+
+    //TODO:!!!!!
+    std::ifstream html_file;
+    std::filesystem::path html_file_path = std::filesystem::current_path() / "html_data" / "index.html";
+    html_file.open(html_file_path.c_str(), std::ios::binary | std::ios::ate);
+//
+//    if (!html_file.is_open())
+//    {
+//        std::cerr << "Html file didn`t opened!! Path = " << html_file_path.c_str() << std::endl;
+//        return false;
+//    }
+//
+//    html_data.reserve(html_file.tellg());
+//    html_file.seekg(0, std::ios::beg);
+//    html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+//    html_file.close();
+//
+//    std::ifstream icon_file;
+//    bfs::path path_icon_file = bfs::current_path() / "icons" / "favicon.png";
+//    icon_file.open(path_icon_file.c_str(), std::ios::binary | std::ios::ate);
+//
+//    if (!icon_file.is_open())
+//    {
+//        std::cerr << "Favicon file did not opened! Path = " << path_icon_file.c_str() << std::endl;
+//    }
+//
+//    std::streamsize  size = icon_file.tellg();
+//    fav_icon_buffer.resize(size);
+//    icon_file.seekg(0, std::ios::beg);
+//
+//    if (!icon_file.read(fav_icon_buffer.data(), size))
+//    {
+//        std::cerr << "Favicon read error" << std::endl;
+//    }
+//    icon_file.close();
+
+
     if (!socketInit()) {
         std::cerr << "Socket init error" << std::endl;
         return false;

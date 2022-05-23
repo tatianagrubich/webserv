@@ -45,7 +45,7 @@ static std::string getIpAddress(const sockaddr_in &clients) {
 void Server::clientProcessing(int socket_client, std::string ip) {
     char buffer[1024 * 16] = {0};
     int read_bytes = 0;
-    (void) ip;
+    //(void) ip;
 
     read_bytes = read(socket_client, buffer, sizeof(buffer));
     //std::cout << "read_bytes = " << read_bytes << std::endl;
@@ -58,9 +58,11 @@ void Server::clientProcessing(int socket_client, std::string ip) {
     http_request request;
     request.parserHttp(buffer);
 
+    std::cout << buffer << std::endl;
+
     std::cout << "Connection from " << ip << " request url " << request.url() << std::endl;
 
-    if (request.type() != http_request::enumType::GET && request.type() != http_request::enumType::POST && request.type() != http_request::enumType::PUT && request.type() != http_request::enumType::DELETE)
+    if (request.type() != GET && request.type() != POST && request.type() != PUT && request.type() != DELETE)
     {
         std::cout << "Unknown type of request. Not support!" << std::endl;
         return ;
@@ -74,53 +76,101 @@ void Server::clientProcessing(int socket_client, std::string ip) {
         {
             if (request.url() == "/") {
                 std::stringstream response;
-                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
+                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
                          << html_data.size() << "\r\n\r\n";
 
                 int sended = 0;
                 //status OK
+                std::cout << "socket_client = " << socket_client << std::endl;
                 sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
 
                 if (sended > 0) {
                     //send index.html
                     sended = write(socket_client, html_data.data(), html_data.size());
+                    //std::cout << "html_data.data() = " << html_data << std::endl;
                 }
             }
             break ;
         }
-        case 12: //"favicon.ico"
+        case 12: //"/favicon.ico"
         {
             if (request.url() == "/favicon.ico")
             {
                 std::stringstream response;
-                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
+                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
                          << fav_icon_buffer.size() << "\r\n\r\n";
                 int sended = 0;
                 //status OK
                 sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
 
                 if (sended > 0) {
-                    //send index.html
+                    //send image.png
                     sended = write(socket_client, fav_icon_buffer.data(), fav_icon_buffer.size());
+                    //std::cout << "fav_icon_buffer.data() = " << fav_icon_buffer.data() << std::endl;
                 }
 
             }
             break ;
         }
     }
-
 }
 
-Server::~Server() {}
+Server::~Server() {
+}
 
 Server::Server(int serverPort) : port(serverPort) {}
 
 bool Server::serverStart() {
 
     //TODO:!!!!!
+
     std::ifstream html_file;
-    std::filesystem::path html_file_path = std::filesystem::current_path() / "html_data" / "index.html";
-    html_file.open(html_file_path.c_str(), std::ios::binary | std::ios::ate);
+    std::string path_res = "html_data/index.html";
+    html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+    if (!html_file.is_open())
+    {
+        std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
+        return false;
+    }
+
+    html_data.reserve(html_file.tellg());
+    html_file.seekg(0, std::ios::beg);
+
+
+//    int size = html_file.tellg();
+//    char *bufff = new char [size];
+//    html_file.read(bufff, size);
+
+    html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+
+    //std::cout << "html_data = " << html_data << std::endl;
+    html_file.close();
+
+
+    std::ifstream icon_file;
+    std::string path_icon = "icons/favicon.png";
+    icon_file.open(path_icon.c_str(), std::ios::binary | std::ios::ate);
+    if (!icon_file.is_open())
+    {
+        std::cerr << "Favicon file did not opened! Path = " << path_icon.c_str() << std::endl;
+    }
+    std::streamsize  size = icon_file.tellg();
+    fav_icon_buffer.resize(size);
+    icon_file.seekg(0, std::ios::beg);
+
+    if (!icon_file.read(fav_icon_buffer.data(), size))
+    {
+        std::cerr << "Favicon read error" << std::endl;
+    }
+    icon_file.close();
+
+
+
+
+//    std::filesystem::path html_file_path = std::filesystem::current_path() / "html_data" / "index.html";
+//    html_file.open(html_file_path.c_str(), std::ios::binary | std::ios::ate);
 //
 //    if (!html_file.is_open())
 //    {
@@ -164,7 +214,7 @@ bool Server::serverStart() {
         sockaddr_in sa_client;
         socklen_t len_client = sizeof(sa_client);
 
-        socket_client = accept(server_socket, (sockaddr * ) & sa_client, &len_client);
+        socket_client = accept(server_socket, (sockaddr *) & sa_client, &len_client);
         if (socket_client == -1) {
             std::cerr << "Accept error" << std::endl;
             continue;
@@ -177,7 +227,9 @@ bool Server::serverStart() {
 }
 
 bool Server::socketInit() {
-    server_socket = socket(PF_INET, SOCK_STREAM, 0); //AF_INET
+    server_socket = socket(AF_INET, SOCK_STREAM, 0); //AF_INET
+
+    std::cout << "server_socket = " << server_socket << std::endl;
 
     if (server_socket == -1) {
         std::cerr << "Can`t create socket" << std::endl;

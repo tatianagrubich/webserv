@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
         port = std::stoi(argv[1]);
     } else {
         std::cerr << "Oops!! To many parameters.." << std::endl;
+        return 0;
     }
 
     Server serv(port);

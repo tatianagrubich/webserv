@@ -11,7 +11,7 @@
 class Server {
 private:
     int port;
-    int server_socket;
+    int server_socket; //socket fd
 
     std::string html_data; //to load a html-page
     std::string start_date_time; //server start time

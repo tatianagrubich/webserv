@@ -16,25 +16,25 @@
 
 //GET (request`s type) / (path)
 
+typedef enum t_enumType {
+    Unknown = 0,
+    GET,
+    PUT,
+    POST,
+    DELETE
+}               s_enumType;
+
 class http_request {
-public:
-    enum class enumType {
-        Unknown = 0,
-        GET,
-        PUT,
-        POST,
-        DELETE
-    };
 public:
     http_request();
 
     void parserHttp(const char*);
-    const enumType &type() const;
+    const s_enumType &type() const;
     const std::string &url() const;
 private:
     void parserForRequest(std::string &);
 
-    enumType m_type {enumType::Unknown};
+    s_enumType m_type;
     std::string m_url;
 };
 

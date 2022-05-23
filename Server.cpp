@@ -245,6 +245,7 @@ bool Server::serverStart() {
 }
 
 bool Server::socketInit() {
+    int yes;
     server_socket = socket(AF_INET, SOCK_STREAM, 0); //AF_INET
 
     std::cout << "server_socket = " << server_socket << std::endl;
@@ -260,6 +261,14 @@ bool Server::socketInit() {
     sa_serv.sin_addr.s_addr = INADDR_ANY;
     sa_serv.sin_port = htons(port);
 
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+    {
+        std::cerr << "Error setsockopt()" << std::endl;
+        close(server_socket);
+        freeServerInfo(sa_serv);
+        return false;
+    }
+
     if (bind(server_socket, (sockaddr * ) & sa_serv, sizeof(sa_serv)) != 0) {
         std::cerr << "Socket can`t bind port " << port << std::endl;
         return false;
@@ -269,4 +278,10 @@ bool Server::socketInit() {
         return false;
     }
     return true;
+}
+
+void Server::freeServerInfo(sockaddr_in &sa_serv) {
+    sa_serv.sin_family = '\0';
+    sa_serv.sin_addr.s_addr = 0;
+    sa_serv.sin_port = 0;
 }

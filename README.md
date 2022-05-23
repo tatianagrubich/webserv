@@ -1,3 +1,6 @@
+сейчас нет Makefile и проект можно запустить следующим образом:
+clang++ -Wall -Wextra -Werror -W --std=c++98 *.cpp -o start
+
 20.05.2022 Добавлены 2 класса: Server и http_request
 
 Server:

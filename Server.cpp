@@ -19,15 +19,15 @@
 //namespace fs = std::experimental::filesystem;
 //namespace bfs = boost::filesystem;
 
-//static std::string getDateTime() {
-//    char buffer[100] = {0};
-//    time_t current_time;
-//    tm *current_tm;
-//    time(&current_time);
-//    current_tm = localtime(&current_time);
-//    strftime(buffer, 100, "%T %d.%m.%Y", current_tm);
-//    return std::string(buffer);
-//}
+static std::string getDateTime() {
+    char buffer[100] = {0};
+    time_t current_time;
+    tm *current_tm;
+    time(&current_time);
+    current_tm = localtime(&current_time);
+    strftime(buffer, 100, "%T %d.%m.%Y", current_tm);
+    return std::string(buffer);
+}
 
 static void *getInAddress(sockaddr *sa) {
     if (sa->sa_family == AF_INET) {
@@ -62,10 +62,9 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
     std::cout << "Connection from " << ip << " request url " << request.url() << std::endl;
 
-    if (request.type() != GET && request.type() != POST && request.type() != PUT && request.type() != DELETE)
-    {
+    if (request.type() != GET && request.type() != POST && request.type() != PUT && request.type() != DELETE) {
         std::cout << "Unknown type of request. Not support!" << std::endl;
-        return ;
+        return;
     }
 
     ++get_request_count;
@@ -90,12 +89,11 @@ void Server::clientProcessing(int socket_client, std::string ip) {
                     //std::cout << "html_data.data() = " << html_data << std::endl;
                 }
             }
-            break ;
+            break;
         }
         case 12: //"/favicon.ico"
         {
-            if (request.url() == "/favicon.ico")
-            {
+            if (request.url() == "/favicon.ico") {
                 std::stringstream response;
                 response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
                          << fav_icon_buffer.size() << "\r\n\r\n";
@@ -110,13 +108,34 @@ void Server::clientProcessing(int socket_client, std::string ip) {
                 }
 
             }
-            break ;
+            break;
+        }
+        case 9: // "how many requests where from beginning"
+        {
+            if (request.url() == "/requests") {
+                std::stringstream response;
+                response << "server was started: " << start_date_time << "<br>"
+                         << "count of GET requests: " << get_request_count << "<br>";
+
+                std::cout << "start_date_time = " << start_date_time <<std::endl;
+                std::cout << "get_request_count = " << get_request_count <<std::endl;
+
+                std::stringstream ok_response;
+                ok_response
+                        << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
+                        << response.str().size() << "\r\n\r\n";
+
+                int sended = 0;
+                sended = write(socket_client, ok_response.str().c_str(), ok_response.str().length());
+                if (sended > 0)
+                    sended = write(socket_client, response.str().data(), response.str().size());
+            }
+            break;
         }
     }
 }
 
-Server::~Server() {
-}
+Server::~Server() {}
 
 Server::Server(int serverPort) : port(serverPort) {}
 
@@ -128,8 +147,7 @@ bool Server::serverStart() {
     std::string path_res = "html_data/index.html";
     html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
 
-    if (!html_file.is_open())
-    {
+    if (!html_file.is_open()) {
         std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
         return false;
     }
@@ -152,16 +170,14 @@ bool Server::serverStart() {
     std::ifstream icon_file;
     std::string path_icon = "icons/favicon.png";
     icon_file.open(path_icon.c_str(), std::ios::binary | std::ios::ate);
-    if (!icon_file.is_open())
-    {
+    if (!icon_file.is_open()) {
         std::cerr << "Favicon file did not opened! Path = " << path_icon.c_str() << std::endl;
     }
-    std::streamsize  size = icon_file.tellg();
+    std::streamsize size = icon_file.tellg();
     fav_icon_buffer.resize(size);
     icon_file.seekg(0, std::ios::beg);
 
-    if (!icon_file.read(fav_icon_buffer.data(), size))
-    {
+    if (!icon_file.read(fav_icon_buffer.data(), size)) {
         std::cerr << "Favicon read error" << std::endl;
     }
     icon_file.close();
@@ -209,12 +225,14 @@ bool Server::serverStart() {
     }
     std::cout << "The server was started on the port " << port << std::endl;
 
+    start_date_time = getDateTime();
+
     while (1) {
         int socket_client;
         sockaddr_in sa_client;
         socklen_t len_client = sizeof(sa_client);
 
-        socket_client = accept(server_socket, (sockaddr *) & sa_client, &len_client);
+        socket_client = accept(server_socket, (sockaddr * ) & sa_client, &len_client);
         if (socket_client == -1) {
             std::cerr << "Accept error" << std::endl;
             continue;

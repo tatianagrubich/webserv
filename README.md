@@ -36,6 +36,6 @@ http_request:
   сделанных к серверу с даты запуска
 - при преходе в браузере на localhost:<port> - отображается стартовая страница "index.html"
 
-![Image text](https://github.com/tatianagrubich/webserv/screenshot.png)
+![Image text](https://github.com/tatianagrubich/webserv/raw/server/screenshot.png)
 
-![Image text](https://github.com/tatianagrubich/webserv/screenshot2.png)
+![Image text](https://github.com/tatianagrubich/webserv/raw/server/screenshot2.png)

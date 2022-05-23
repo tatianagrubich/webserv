@@ -36,10 +36,6 @@ http_request:
   сделанных к серверу с даты запуска
 - при преходе в браузере на localhost:<port> - отображается стартовая страница "index.html"
 
-<p align="center">
-  <img src="main_part/screenshot.png" width="350" title="hover text">
-</p>
+![Image text](main_part/screenshot.png)
 
-<p align="center">
-  <img src="main_part/screenshot2.png" width="350" title="hover text">
-</p>
+![Image text](main_part/screenshot2.png)

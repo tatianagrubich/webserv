@@ -11,17 +11,17 @@
 #define RED "\033[31m"
 #define END "\033[0m"
 
-typedef struct t_parametrs
+typedef struct s_parametrs
 {
 	std::size_t listen;
 	std::size_t methods;
 	std::size_t root;
-} t_parametrs;
+} t_parameters;
 
 class InfoServer
 {
 	std::string					str_from_config_file;
-	t_parametrs					parametrs;
+	t_parameters				parameters;
 	std::string					ip;
 	std::string					port;
 	std::vector<std::string>	methods;
@@ -37,6 +37,7 @@ class InfoServer
 	bool isComment(std::string source);
 	std::string deleteSpases(std::string source);
 
+
 public:
 	// InfoServer(void);
 	// ~InfoServer(void);
@@ -45,6 +46,8 @@ public:
 	void parsingStringForInfoServer(std::string source);
 	void printInfoServer();
 	void initSockAddrIn();
+	void addLocation(Location location);
+
 };
 
 #endif

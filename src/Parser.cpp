@@ -36,8 +36,6 @@ Parser::Parser(char *config_file_name)
 
 std::vector<InfoServer> Parser::parserConfigFile()
 {
-	std::string tmp;
-
 	errorConfigFile();
 	readConfigFile();
 	foundInfoServers();
@@ -70,18 +68,59 @@ void Parser::foundInfoServers()
 	void Parser::createInfoServer()
 	{
 		InfoServer info_server;
-		std::size_t pos = 0;
+		std::size_t pos_server = 0;
+		std::size_t pos_loc = 0;
 
 		while (++index < (int)file.size())
     	{
-			pos = 0;
-			if ((pos = file[index].find("server {", pos)) != std::string::npos)
+			pos_server = 0;
+			pos_loc = 0;
+			if ((pos_server = file[index].find("server {", pos_server)) != std::string::npos)
 				break;
+			if ((pos_loc = file[index].find("location", pos_loc)) != std::string::npos)
+			{
+				while((pos_loc = file[index].find("location", pos_loc)) != std::string::npos)
+				{
+					// pos_server = 0;
+					// if ((pos_server = file[index].find("server {", pos_server)) != std::string::npos)
+					// 	return;
+
+					if(!createLocation(info_server))
+					{
+						info_server.initSockAddrIn();
+						servers.push_back(info_server);
+						return;
+					}
+				}
+			}
 			info_server.parsingStringForInfoServer(file[index]);
+			// info_server.printInfoServer();
 
     	}
 		info_server.initSockAddrIn();
 		servers.push_back(info_server);
+	}
+
+	bool Parser::createLocation(InfoServer &info_server)
+	{
+		Location location;
+		std::size_t pos_loc = 0;
+		std::size_t pos_serv = 0;
+
+		location.parsingStringForLocation(file[index]);
+		while (++index < (int)file.size())
+    	{
+			pos_loc = 0;
+			pos_serv = 0;
+			if ((pos_loc = file[index].find("location", pos_loc)) != std::string::npos)
+				break;
+			if ((pos_serv = file[index].find("server {", pos_serv)) != std::string::npos)
+				return false;
+			location.parsingStringForLocation(file[index]);
+
+    	}
+		info_server.addLocation(location);
+		return true;
 	}
 
 	void Parser::printServers()

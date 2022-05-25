@@ -4,6 +4,7 @@
 # include <vector>
 # include <fstream>
 # include "InfoServer.hpp"
+# include "Location.hpp"
 
 #define GREEN "\033[32m"
 #define BLUE "\033[34m"
@@ -26,6 +27,7 @@ class Parser
 	void errorConfigFile();
 	// void analysisStringFromConfigFile();
 	void createInfoServer();
+	bool createLocation(InfoServer &info_server);
 	void readConfigFile();
 	void foundInfoServers();
 

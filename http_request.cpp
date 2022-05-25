@@ -16,7 +16,7 @@ void http_request::parserHttp(const char *adDataStr) {
     parserForRequest(line);
 
     std::string str;
-    while (std::getline(iss, line)) { //add request body; now this method read ONLY request (without body)
+    while (std::getline(iss, line)) { //add request body; now this method read ONLY request`s header (without body)
         std::istringstream iss_line(line);
         iss_line>>str;
         //std::cout << str << std::endl;
@@ -37,10 +37,6 @@ void http_request::parserForRequest(std::string &str) {
         {
             if (tempType == "GET") {
                 m_type = GET;
-                std::cout << "request type = " << type() << std::endl;
-            }
-            else if (tempType == "PUT") {
-                m_type = PUT;
                 std::cout << "request type = " << type() << std::endl;
             }
             break;

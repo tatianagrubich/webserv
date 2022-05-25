@@ -74,6 +74,23 @@ void Server::clientProcessing(int socket_client, std::string ip) {
         case 1: // "/"
         {
             if (request.url() == "/") {
+
+                std::ifstream html_file;
+                std::string path_res = "html_data/index.html";
+                html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+                if (!html_file.is_open()) {
+                    std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
+                    break ;
+                }
+
+                html_data.reserve(html_file.tellg());
+                html_file.seekg(0, std::ios::beg);
+                html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+                //std::cout << "html_data = " << html_data << std::endl;
+                html_file.close();
+
                 std::stringstream response;
                 response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
                          << html_data.size() << "\r\n\r\n";
@@ -82,6 +99,9 @@ void Server::clientProcessing(int socket_client, std::string ip) {
                 //status OK
                 std::cout << "socket_client = " << socket_client << std::endl;
                 sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
+
+                std::cout << response.str() << std::endl;
+
 
                 if (sended > 0) {
                     //send index.html
@@ -100,6 +120,8 @@ void Server::clientProcessing(int socket_client, std::string ip) {
                 int sended = 0;
                 //status OK
                 sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
+
+                std::cout << response.str() << std::endl;
 
                 if (sended > 0) {
                     //send image.png
@@ -127,10 +149,49 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
                 int sended = 0;
                 sended = write(socket_client, ok_response.str().c_str(), ok_response.str().length());
+
+                std::cout << ok_response.str() << std::endl;
+
                 if (sended > 0)
                     sended = write(socket_client, response.str().data(), response.str().size());
             }
             break;
+        }
+        case 5: // "/post.html"
+        {
+            std::ifstream html_file;
+            std::string path_res = "html_data/post.html";
+            html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+            if (!html_file.is_open()) {
+                std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
+                break ;
+            }
+
+            html_data.reserve(html_file.tellg());
+            html_file.seekg(0, std::ios::beg);
+            html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+            //std::cout << "html_data = " << html_data << std::endl;
+            html_file.close();
+
+            if (request.url() == "/post") {
+
+                std::stringstream response;
+                response
+                        << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
+                        << html_data.size() << "\r\n\r\n";
+
+                int sended = 0;
+                sended = write(socket_client, response.str().c_str(), response.str().length());
+
+                std::cout << response.str() << std::endl;
+                if (sended > 0)
+                    sended = write(socket_client, html_data.data(), html_data.size());
+
+
+            }
+            break ;
         }
     }
 }
@@ -154,14 +215,7 @@ bool Server::serverStart() {
 
     html_data.reserve(html_file.tellg());
     html_file.seekg(0, std::ios::beg);
-
-
-//    int size = html_file.tellg();
-//    char *bufff = new char [size];
-//    html_file.read(bufff, size);
-
     html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
-
 
     //std::cout << "html_data = " << html_data << std::endl;
     html_file.close();
@@ -181,43 +235,6 @@ bool Server::serverStart() {
         std::cerr << "Favicon read error" << std::endl;
     }
     icon_file.close();
-
-
-
-
-//    std::filesystem::path html_file_path = std::filesystem::current_path() / "html_data" / "index.html";
-//    html_file.open(html_file_path.c_str(), std::ios::binary | std::ios::ate);
-//
-//    if (!html_file.is_open())
-//    {
-//        std::cerr << "Html file didn`t opened!! Path = " << html_file_path.c_str() << std::endl;
-//        return false;
-//    }
-//
-//    html_data.reserve(html_file.tellg());
-//    html_file.seekg(0, std::ios::beg);
-//    html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
-//    html_file.close();
-//
-//    std::ifstream icon_file;
-//    bfs::path path_icon_file = bfs::current_path() / "icons" / "favicon.png";
-//    icon_file.open(path_icon_file.c_str(), std::ios::binary | std::ios::ate);
-//
-//    if (!icon_file.is_open())
-//    {
-//        std::cerr << "Favicon file did not opened! Path = " << path_icon_file.c_str() << std::endl;
-//    }
-//
-//    std::streamsize  size = icon_file.tellg();
-//    fav_icon_buffer.resize(size);
-//    icon_file.seekg(0, std::ios::beg);
-//
-//    if (!icon_file.read(fav_icon_buffer.data(), size))
-//    {
-//        std::cerr << "Favicon read error" << std::endl;
-//    }
-//    icon_file.close();
-
 
     if (!socketInit()) {
         std::cerr << "Socket init error" << std::endl;

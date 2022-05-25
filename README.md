@@ -49,3 +49,7 @@ http_request:
   сервер не может быть на нем перезапущен
 - добавлен метод freeServerInfo(sockaddr_in &sa_serv) для обнуления данных структуры sockaddr_in
 
+25.05.2022
+Добравлен пример обработки POST-запроса.
+Чтобы проверить как он работает нужно запустить сервер и перейти на localhost:<port>/post
+![Image text](https://github.com/tatianagrubich/webserv/raw/server/screenshot3.png)

@@ -5,12 +5,6 @@
 #ifndef WEBSERV_HTTP_REQUEST_H
 #define WEBSERV_HTTP_REQUEST_H
 
-//#define UNKNOWN 0;
-//#define GET
-//#define PUT
-//#define POST
-//#define DELETE
-
 #include <iostream>
 #include <string>
 

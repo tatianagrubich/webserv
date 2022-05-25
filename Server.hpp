@@ -7,6 +7,12 @@
 
 #include <vector>
 #include <fstream>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sstream>
+#include <iostream>
 
 class Server {
 private:
@@ -29,7 +35,12 @@ public:
     Server(Server const &other);
     Server(int const &port, int const &server_socket);
 
+//    TODO:!!!
+//    void setServerPort(int port);
+//    void setServerSocket(int server_socket);
+
     bool serverStart();
+    void freeServerInfo(sockaddr_in &sa_serv);
 };
 
 

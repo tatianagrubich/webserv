@@ -1,4 +1,4 @@
-сейчас нет Makefile и проект можно запустить следующим образом:
+Cейчас нет Makefile и проект можно запустить следующим образом:
 clang++ -Wall -Wextra -Werror -W --std=c++98 *.cpp -o start
 
 20.05.2022 Добавлены 2 класса: Server и http_request
@@ -42,3 +42,14 @@ http_request:
 ![Image text](https://github.com/tatianagrubich/webserv/raw/server/screenshot.png)
 
 ![Image text](https://github.com/tatianagrubich/webserv/raw/server/screenshot2.png)
+
+В метод socketInit() добавлено:
+
+- если сервер перезапускается, то можно будет запускать его на том же самом порту и не будет возникать ошибки, что
+  сервер не может быть на нем перезапущен
+- добавлен метод freeServerInfo(sockaddr_in &sa_serv) для обнуления данных структуры sockaddr_in
+
+25.05.2022
+Добравлен пример обработки POST-запроса.
+Чтобы проверить как он работает нужно запустить сервер и перейти на localhost:<port>/post
+![Image text](https://github.com/tatianagrubich/webserv/raw/server/screenshot3.png)

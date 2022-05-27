@@ -48,6 +48,7 @@ public:
 	void initSockAddrIn();
 	void addLocation(Location location);
 
+    std::string getPort();
 };
 
 #endif

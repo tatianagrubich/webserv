@@ -3,11 +3,15 @@ SRCS		= 	main.cpp \
 				utils/utils_for_parser.cpp \
 				src/InfoServer.cpp \
 				src/Location.cpp \
-				src/Parser.cpp
+				src/Parser.cpp \
+				src/http_request.cpp \
+				src/Server.cpp
 INCLUDES	=	includes/Webserv.hpp \
 				includes/InfoServer.hpp \
 				includes/Location.hpp \
-				includes/Parser.hpp
+				includes/Parser.hpp \
+				includes/http_request.hpp \
+				includes/Server.hpp
 
 CC 			= 	c++ -std=c++98
 FLAGS		=	-Wall -Wextra -Werror

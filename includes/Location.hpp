@@ -40,6 +40,8 @@ public:
 	// InfoServer	&operator=(const InfoServer &other);
 	void parsingStringForLocation(std::string source);
 	void printLocation();
+
+    std::string getRoot();
 };
 
 #endif

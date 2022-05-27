@@ -147,3 +147,7 @@ void Location::printLocation()
 		std::cout << BLUE << i << "_loc=" << END  << methods[i]<< std::endl;
 	}
 }
+
+std::string Location::getRoot() {
+    return this->root;
+}

@@ -11,10 +11,13 @@ int main(int argc, char **argv)
 	std::vector<InfoServer> servers = parser.parserConfigFile();
 	parser.printServers();
 
-	// Server serv(port);
-    // if (!serv.serverStart()) {
-    //     std::cerr << "Server can`t be start" << std::endl;
-    // }
+    int port = std::stoi(servers[0].getPort());
+    //int port2 = std::stoi(servers[1].getPort());
+    Server serv(port);
+    //Server serv2(port2);
+     if (!serv.serverStart()) {
+         std::cerr << "Server can`t be start" << std::endl;
+     }
 
 	return (0);
 }

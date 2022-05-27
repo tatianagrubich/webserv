@@ -144,3 +144,8 @@ void InfoServer::initSockAddrIn()
 	{
 		locations.push_back(location);
 	}
+
+std::string InfoServer::getPort() {
+    return this->port;
+}
+

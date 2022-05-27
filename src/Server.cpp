@@ -203,8 +203,8 @@ Server::Server(int serverPort) : port(serverPort) {}
 bool Server::serverStart() {
 
     std::ifstream html_file;
-//    std::string path_res = "html_data/index.html";
-    std::string path_res = info; //TODO:!!!!!
+    std::string path_res = "html_data/index.html";
+//    std::string path_res = info; //TODO:!!!!!
     html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
 
     if (!html_file.is_open()) {

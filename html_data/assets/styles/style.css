@@ -1,0 +1,261 @@
+#back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    background: #F4F9E2;
+}
+
+
+
+
+
+
+
+
+
+#logo {
+    position: absolute;
+    width: 100px;
+    /* height: 87px; */
+    left: 120px;
+    top: 50px;
+}
+
+#logoname {
+    position: absolute;
+    width: 484px;
+    height: 27px;
+    left: 240px;
+    top: 80px;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-size: 30px;
+    line-height: 27px;
+    /* identical to box height */
+    letter-spacing: -0.035em;
+    color: #62D0DF;
+}
+
+
+
+.banner {
+    position: absolute;
+    width: 580px;
+    height: 650px;
+    top: 207px;
+}
+
+.menu {
+    position: absolute;
+    height: 16px;
+    top: 95px;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-size: 13px;
+    line-height: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+#menu3:hover,
+#menu4:hover,
+#menu5:hover,
+#menu6:hover {
+    font-weight: bold;
+    color: #D1A954;
+}
+
+#menu3:visited,
+#menu4:visited,
+#menu5:visited,
+#menu6:visited {
+    color: #D1A954;
+}
+
+.open {
+    position: absolute;
+    width: 40px;
+    height: 0px;
+    left: 1515px;
+    border: 1px solid #000000;
+    background-color: black;
+}
+
+.fon_nav {
+    position: absolute;
+    width: 580px;
+    height: 166px;
+    top: 691px;
+    background: rgba(209, 169, 84, 0.9);
+}
+
+.fon_nav_abris {
+    position: absolute;
+    width: 550px;
+    height: 126px;
+    top: 711px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+}
+
+.fonts_nav {
+    position: absolute;
+    width: 580px;
+    height: 29px;
+    top: 732px;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 30px;
+    line-height: 37px;
+    text-align: center;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.fonts_nav:hover {
+    font-size: 40px;
+}
+
+.fonts_description_nav {
+    position: absolute;
+    width: 580px;
+    height: 34px;
+    top: 781px;
+    font-family: 'Montserrat', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 135%;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+#banner1 {
+    left: 60px;
+}
+
+#banner2 {
+    left: 670px;
+}
+
+#banner3 {
+    left: 1280px;
+}
+
+
+
+#menu1 {
+    width: 70px;
+    left: 577px;
+    font-weight: normal;
+    text-align: center;
+    color: #D1A954;
+}
+
+#menu2 {
+    width: 152px;
+    left: 677px;
+    font-weight: bold;
+    color: #D1A954;
+}
+
+#menu3 {
+    width: 116px;
+    left: 859px;
+    font-weight: 300;
+    color: #000000;
+}
+
+#menu4 {
+    width: 79px;
+    left: 1005px;
+    font-weight: 300;
+    color: #000000;
+}
+
+#menu5 {
+    width: 87px;
+    left: 1114px;
+    font-weight: 300;
+    color: #000000;
+}
+
+#menu6 {
+    width: 111px;
+    left: 1231px;
+    font-weight: 300;
+    color: #000000;
+}
+
+#nav_1 {
+    left: 60px;
+}
+
+#nav_2 {
+    left: 670px;
+}
+
+#nav_3 {
+    left: 1280px;
+}
+
+#open_1 {
+    top: 93px;
+}
+
+#open_2 {
+    top: 103px;
+}
+
+#open_3 {
+    top: 113px;
+}
+
+#select {
+    position: absolute;
+    width: 88px;
+    height: 29px;
+    left: 568px;
+    top: 88px;
+    border: 1px solid rgba(209, 169, 84, 0.9);
+}
+
+#fon_nav_abris_1 {
+    left: 75px;
+}
+
+#fon_nav_abris_2 {
+    left: 685px;
+}
+
+#fon_nav_abris_3 {
+    left: 1295px;
+}
+
+#fonts_nav_1 {
+    left: 60px;
+}
+
+#fonts_nav_2 {
+    left: 670px;
+}
+
+#fonts_nav_3 {
+    left: 1280px;
+}
+
+#fonts_description_nav_1 {
+    left: 60px;
+}
+
+#fonts_description_nav_2 {
+    left: 670px;
+}
+
+#fonts_description_nav_3 {
+    left: 1280px;
+}

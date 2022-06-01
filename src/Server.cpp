@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sstream>
+#include <fcntl.h>
 #include <iostream>
 #include <fstream>
 #include <experimental/filesystem>
@@ -62,18 +63,53 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
     std::cout << "Connection from " << ip << " request url " << request.url() << std::endl;
 
-    if (request.type() != GET && request.type() != POST && request.type() != PUT && request.type() != DELETE) {
+    if (request.type() != GET && request.type() != POST && request.type() != DELETE) {
         std::cout << "Unknown type of request. Not support!" << std::endl;
+
+        std::ifstream html_file;
+        std::string path_res = "html_data/404.html";
+        html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+        if (!html_file.is_open()) {
+            std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
+            exit(-1);
+        }
+
+        html_data.reserve(html_file.tellg());
+        html_file.seekg(0, std::ios::beg);
+        html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+        //std::cout << "html_data = " << html_data << std::endl;
+        html_file.close();
+
+        std::stringstream response;
+        response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/html\r\nConnect-Length: "
+                 << html_data.size() << "\r\n\r\n";
+
+        int sended = 0;
+        //status OK
+        //std::cout << "socket_client = " << socket_client << std::endl;
+        sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
+
+        std::cout << response.str() << std::endl;
+
+
+        if (sended > 0) {
+            //send exampl.txt
+            sended = write(socket_client, html_data.data(), html_data.size());
+            //std::cout << "html_data.data() = " << html_data << std::endl;
+        }
+
         return;
     }
 
     ++get_request_count;
-    //html_data = "index.html";
+    //html_data = "exampl.txt";
 
     switch (request.url().length()) {
         case 1: // "/"
         {
-            if (request.url() == "/") {
+            if (request.url() == "/" && request.type() == GET) {
 
                 std::ifstream html_file;
                 std::string path_res = "html_data/index.html";
@@ -81,7 +117,7 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
                 if (!html_file.is_open()) {
                     std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
-                    break ;
+                    break;
                 }
 
                 html_data.reserve(html_file.tellg());
@@ -97,17 +133,23 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
                 int sended = 0;
                 //status OK
-                std::cout << "socket_client = " << socket_client << std::endl;
+                //std::cout << "socket_client = " << socket_client << std::endl;
                 sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
 
                 std::cout << response.str() << std::endl;
 
-
+                html_data = getFilesFromDirectory();
                 if (sended > 0) {
-                    //send index.html
+                    //send exampl.txt
                     sended = write(socket_client, html_data.data(), html_data.size());
                     //std::cout << "html_data.data() = " << html_data << std::endl;
                 }
+            } else if (request.url() == "/" && request.type() == POST) {
+                std::cout << "POST" << std::endl;
+
+                //TODO!!!
+
+
             }
             break;
         }
@@ -139,8 +181,8 @@ void Server::clientProcessing(int socket_client, std::string ip) {
                 response << "server was started: " << start_date_time << "<br>"
                          << "count of GET requests: " << get_request_count << "<br>";
 
-                std::cout << "start_date_time = " << start_date_time <<std::endl;
-                std::cout << "get_request_count = " << get_request_count <<std::endl;
+                std::cout << "start_date_time = " << start_date_time << std::endl;
+                std::cout << "get_request_count = " << get_request_count << std::endl;
 
                 std::stringstream ok_response;
                 ok_response
@@ -165,7 +207,7 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
             if (!html_file.is_open()) {
                 std::cerr << "Html file did not opened!! Path = " << path_res << std::endl;
-                break ;
+                break;
             }
 
             html_data.reserve(html_file.tellg());
@@ -191,20 +233,146 @@ void Server::clientProcessing(int socket_client, std::string ip) {
 
 
             }
-            break ;
+            break;
+        }
+        case 27: // "/assets/images/settings.png"
+        {
+            std::ifstream html_file;
+            std::string path_res = "html_data/assets/images/settings.png";
+            html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+            if (!html_file.is_open()) {
+                std::cerr << "Phg file did not opened!! Path = " << path_res << std::endl;
+                break;
+            }
+
+            html_data.reserve(html_file.tellg());
+            html_file.seekg(0, std::ios::beg);
+            html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+            //std::cout << "html_data = " << html_data << std::endl;
+            html_file.close();
+            std::stringstream response;
+            if (request.url() == "/assets/images/settings.png") {
+
+                std::stringstream response;
+                response
+                        << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
+                        << html_data.size() << "\r\n\r\n";
+
+                int sended = 0;
+                sended = write(socket_client, response.str().c_str(), response.str().length());
+
+                std::cout << response.str() << std::endl;
+                if (sended > 0)
+                    sended = write(socket_client, html_data.data(), html_data.size());
+            }
+            break;
+        }
+        case 18: //"/icons/favicon.png"
+        {
+            if (request.url() == "/icons/favicon.png") {
+                std::stringstream response;
+                response << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
+                         << fav_icon_buffer.size() << "\r\n\r\n";
+                int sended = 0;
+                //status OK
+                sended = write(socket_client, response.str().c_str(), response.str().length()); //for "HTTP/1.1 200 OK"
+
+                std::cout << response.str() << std::endl;
+
+                if (sended > 0) {
+                    //send image.png
+                    sended = write(socket_client, fav_icon_buffer.data(), fav_icon_buffer.size());
+                    //std::cout << "fav_icon_buffer.data() = " << fav_icon_buffer.data() << std::endl;
+                }
+
+            }
+            break;
+        }
+        case 13: // "/settings.png"
+        {
+            std::ifstream html_file;
+            std::string path_res = "files/settings.png";
+            html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+            if (!html_file.is_open()) {
+                std::cerr << "Phg file did not opened!! Path = " << path_res << std::endl;
+                break;
+            }
+
+            html_data.reserve(html_file.tellg());
+            html_file.seekg(0, std::ios::beg);
+            html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+            //std::cout << "html_data = " << html_data << std::endl;
+            html_file.close();
+            std::stringstream response;
+            if (request.url() == "/settings.png") {
+
+                std::stringstream response;
+                response
+                        << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: image/png\r\nConnect-Length: "
+                        << html_data.size() << "\r\n\r\n";
+
+                int sended = 0;
+                sended = write(socket_client, response.str().c_str(), response.str().length());
+
+                std::cout << response.str() << std::endl;
+                if (sended > 0)
+                    sended = write(socket_client, html_data.data(), html_data.size());
+            }
+            break;
+        }
+        case 11: // "/exampl.txt"
+        {
+            std::ifstream html_file;
+            std::string path_res = "files/exampl.txt";
+            html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
+
+            if (!html_file.is_open()) {
+                std::cerr << "Phg file did not opened!! Path = " << path_res << std::endl;
+                break;
+            }
+
+            html_data.reserve(html_file.tellg());
+            html_file.seekg(0, std::ios::beg);
+            html_data.assign((std::istreambuf_iterator<char>(html_file)), std::istreambuf_iterator<char>());
+
+            //std::cout << "html_data = " << html_data << std::endl;
+            html_file.close();
+            std::stringstream response;
+            if (request.url() == "/exampl.txt") {
+
+                std::stringstream response;
+                response
+                        << "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Type: text/txt\r\nConnect-Length: "
+                        << html_data.size() << "\r\n\r\n";
+
+                int sended = 0;
+                sended = write(socket_client, response.str().c_str(), response.str().length());
+
+                std::cout << response.str() << std::endl;
+                if (sended > 0)
+                    sended = write(socket_client, html_data.data(), html_data.size());
+            }
+            break;
         }
     }
 }
 
+
+
+
 Server::~Server() {}
 
-Server::Server(int serverPort) : port(serverPort) {}
+Server::Server(int server_port) : port(server_port) {}
 
-bool Server::serverStart() {
-
+bool Server::serverStart(int server_socket) {
     std::ifstream html_file;
     std::string path_res = "html_data/index.html";
-//    std::string path_res = info; //TODO:!!!!!
+    //std::string path_res = info; //TODO:!!!!!
+
     html_file.open(path_res.c_str(), std::ios::binary | std::ios::ate);
 
     if (!html_file.is_open()) {
@@ -235,10 +403,11 @@ bool Server::serverStart() {
     }
     icon_file.close();
 
-    if (!socketInit()) {
+    if (!socketInit(server_socket)) {
         std::cerr << "Socket init error" << std::endl;
         return false;
     }
+
     std::cout << "The server was started on the port " << port << std::endl;
 
     start_date_time = getDateTime();
@@ -249,22 +418,23 @@ bool Server::serverStart() {
         socklen_t len_client = sizeof(sa_client);
 
         socket_client = accept(server_socket, (sockaddr * ) & sa_client, &len_client);
+        //std::cout << "server_socket = " << server_socket << std::endl;
+        //std::cout << "socket_client = " << socket_client << std::endl;
         if (socket_client == -1) {
             std::cerr << "Accept error" << std::endl;
             continue;
         }
         std::string ip = getIpAddress(sa_client);
         clientProcessing(socket_client, ip);
+        close(socket_client);
     }
-
     return true;
 }
 
-bool Server::socketInit() {
+bool Server::socketInit(int server_socket) {
     int yes;
-    server_socket = socket(AF_INET, SOCK_STREAM, 0); //AF_INET
-
-    std::cout << "server_socket = " << server_socket << std::endl;
+    //server_socket = socket(AF_INET, SOCK_STREAM, 0); //AF_INET
+    //std::cout << "server_socket = " << server_socket << std::endl;
 
     if (server_socket == -1) {
         std::cerr << "Can`t create socket" << std::endl;
@@ -289,7 +459,7 @@ bool Server::socketInit() {
         std::cerr << "Socket can`t bind port " << port << std::endl;
         return false;
     }
-    if (listen(server_socket, 37) != 0) {
+    if (listen(server_socket, 128) != 0) {
         std::cerr << "Socket can`t configure listening port " << std::endl;
         return false;
     }
@@ -300,4 +470,18 @@ void Server::freeServerInfo(sockaddr_in &sa_serv) {
     sa_serv.sin_family = '\0';
     sa_serv.sin_addr.s_addr = 0;
     sa_serv.sin_port = 0;
+}
+
+int Server::getSocket() {
+    return this->server_socket;
+}
+
+Server::Server() {
+
+}
+
+Server &Server::operator=(const Server &other) {
+    this->port = other.port;
+    this->server_socket = other.server_socket;
+    return *this;
 }

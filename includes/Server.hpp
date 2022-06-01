@@ -13,7 +13,10 @@
 #include <arpa/inet.h>
 #include <sstream>
 #include <iostream>
+#include <thread>
 #include "InfoServer.hpp"
+#include "StartMultipleServers.hpp"
+#include "../includes/Webserv.hpp"
 
 class Server {
 private:
@@ -27,22 +30,24 @@ private:
 
     std::vector<char> fav_icon_buffer;
 
-    bool socketInit();
+    bool socketInit(int server_socket);
     void clientProcessing(int, std::string);
 
 public:
     Server(int server_port);
     ~Server();
     Server &operator=(Server const &other);
-    Server(Server const &other);
-    Server(int const &port, int const &server_socket);
+    //Server(Server const &other);
+    //Server(int const &port, int const &server_socket);
 
 //    TODO:!!!
 //    void setServerPort(int port);
 //    void setServerSocket(int server_socket);
+    bool serverStart(int server_socket);
+    static void freeServerInfo(sockaddr_in &sa_serv);
+    int getSocket();
 
-    bool serverStart();
-    void freeServerInfo(sockaddr_in &sa_serv);
+    Server();
 };
 
 

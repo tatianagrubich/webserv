@@ -13,7 +13,6 @@
 typedef enum t_enumType {
     Unknown = 0,
     GET,
-    PUT,
     POST,
     DELETE
 }               s_enumType;

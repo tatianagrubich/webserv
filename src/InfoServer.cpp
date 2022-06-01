@@ -148,4 +148,3 @@ void InfoServer::initSockAddrIn()
 std::string InfoServer::getPort() {
     return this->port;
 }
-

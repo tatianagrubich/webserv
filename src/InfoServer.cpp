@@ -1,24 +1,9 @@
 #include "../includes/InfoServer.hpp"
 
-// InfoServer::InfoServer()
-// {
-// }
-// 	InfoServer::~InfoServer(void)
-// 	{
-
-// 	}
-// 	InfoServer::InfoServer(const InfoServer &other)
-// 	{
-
-// 	}
-// 	InfoServer	&InfoServer::operator=(const InfoServer &other)
-// 	{
-
-// 	}
 void InfoServer::parsingStringForInfoServer(std::string source)
 {
 	foundParametrsForServer(source);
-	if(parameters.listen != std::string::npos)
+	if (parameters.listen != std::string::npos)
 	{
 		parsingListen(source);
 	}
@@ -30,6 +15,10 @@ void InfoServer::parsingStringForInfoServer(std::string source)
 	{
 		parsingRoot(source);
 	}
+	else if (parameters.autoindex != std::string::npos)
+	{
+		parsingAutoindex(source);
+	}
 }
 
 void InfoServer::foundParametrsForServer(std::string source)
@@ -37,15 +26,16 @@ void InfoServer::foundParametrsForServer(std::string source)
 	parameters.listen = source.find("listen");
 	parameters.methods = source.find("methods");
 	parameters.root = source.find("root");
+	parameters.autoindex = source.find("autoindex");
 }
 
 void InfoServer::parsingListen(std::string source)
 {
 	std::size_t pos = 0;
 
-	if(!isComment(source))
+	if (!isComment(source))
 	{
-		return ;
+		return;
 	}
 	source.erase(parameters.listen, strlen("listen"));
 	source = deleteSpases(source);
@@ -56,9 +46,9 @@ void InfoServer::parsingListen(std::string source)
 
 void InfoServer::parsingMethods(std::string source)
 {
-	if(!isComment(source))
+	if (!isComment(source))
 	{
-		return ;
+		return;
 	}
 	source.erase(parameters.methods, strlen("methods"));
 	source = deleteSpases(source);
@@ -66,8 +56,7 @@ void InfoServer::parsingMethods(std::string source)
 	std::size_t pos = 0;
 	std::size_t next = 0;
 
-
-	while((next = source.find(" ", pos)) != std::string::npos)
+	while ((next = source.find(" ", pos)) != std::string::npos)
 	{
 		methods.push_back(source.substr(pos, next - pos));
 		pos = next + 1;
@@ -77,13 +66,27 @@ void InfoServer::parsingMethods(std::string source)
 
 void InfoServer::parsingRoot(std::string source)
 {
-	if(!isComment(source))
+	if (!isComment(source))
 	{
-		return ;
+		return;
 	}
 	source.erase(parameters.root, strlen("root"));
 	source = deleteSpases(source);
 	root = source;
+}
+
+void InfoServer::parsingAutoindex(std::string source)
+{
+	if (!isComment(source))
+	{
+		return;
+	}
+	source.erase(parameters.autoindex, strlen("autoindex"));
+	source = deleteSpases(source);
+	if (source == "on")
+	{
+		autoindexFlag = true;
+	}
 }
 
 bool InfoServer::isComment(std::string source)
@@ -91,7 +94,7 @@ bool InfoServer::isComment(std::string source)
 	std::size_t pos = 0;
 
 	pos = source.find("#", pos);
-	if(pos == std::string::npos)
+	if (pos == std::string::npos)
 	{
 		return true;
 	}
@@ -102,13 +105,13 @@ std::string InfoServer::deleteSpases(std::string source)
 {
 	int i = 0;
 	const char *str = source.c_str();
-	if(str[source.length() - 1] == ';')
+	if (str[source.length() - 1] == ';')
 	{
 		source.erase(source.find(";"), 1);
 	}
-	while(str[i] == ' ' || str[i] == '\t')
+	while (str[i] == ' ' || str[i] == '\t')
 		i++;
-	if(i)
+	if (i)
 		source.erase(0, i);
 	return source;
 }
@@ -118,33 +121,48 @@ void InfoServer::printInfoServer()
 	std::cout << GREEN << "InfoServer" << END << std::endl;
 	std::cout << BLUE << "Ip=" << END << ip << std::endl;
 	std::cout << BLUE << "Port=" << END << port << std::endl;
-	std::cout << BLUE << "Root=" << END << root<< std::endl;
-	for(int i = 0; i < (int)methods.size(); i++)
+	std::cout << BLUE << "Root=" << END << root << std::endl;
+	std::cout << BLUE << "Autoindex=" << END << autoindexFlag << std::endl;
+	for (int i = 0; i < (int)methods.size(); i++)
 	{
-		std::cout << BLUE << i << "=" << END  <<methods[i]<< std::endl;
+		std::cout << BLUE << i << "_serv_meth=" << END << methods[i] << std::endl;
 	}
-	for(int i = 0; i < (int)locations.size(); i++)
+	for (int i = 0; i < (int)locations.size(); i++)
 	{
 		std::cout << BLUE << i << "_loc " << END;
 		locations[i].printLocation();
 	}
-
 }
 
 void InfoServer::initSockAddrIn()
 {
 	memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(std::atoi(port.c_str()));
-    addr.sin_addr.s_addr = inet_addr(ip.c_str());
-
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(std::atoi(port.c_str()));
+	addr.sin_addr.s_addr = inet_addr(ip.c_str());
 }
 
-	void InfoServer::addLocation(Location location)
-	{
-		locations.push_back(location);
-	}
+void InfoServer::addLocation(Location location)
+{
+	locations.push_back(location);
+}
 
-std::string InfoServer::getPort() {
-    return this->port;
+std::string InfoServer::getPort()
+{
+	return this->port;
+}
+
+std::string InfoServer::getRoot()
+{
+	return this->root;
+}
+
+std::vector<std::string> InfoServer::getMethods()
+{
+	return this->methods;
+}
+
+bool InfoServer::getAutoindexFlag()
+{
+	return this->autoindexFlag;
 }

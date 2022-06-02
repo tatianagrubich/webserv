@@ -44,7 +44,7 @@ void    Cgi::cgiExec(std::vector<InfoServer> servers, char *const *buffer) {
     pid_t pid = fork();
     if (pid < 0)
         throw std::runtime_error("fork() failed.");
-   if (pid == 0) {
+    if (pid == 0) {
         dup2(fd_write[0], STDERR_FILENO);
         close(fd_write[1]);
         dup2(fd_read[1], STDERR_FILENO);

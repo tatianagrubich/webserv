@@ -1,7 +1,7 @@
 #ifndef LOCATION_HPP
-# define LOCATION_HPP
-# include <iostream>
-# include <vector>
+#define LOCATION_HPP
+#include <iostream>
+#include <vector>
 
 #define GREEN "\033[32m"
 #define BLUE "\033[34m"
@@ -14,16 +14,17 @@ typedef struct s_loc
 	std::size_t methods;
 	std::size_t root;
 	std::size_t index;
+	std::size_t cgi;
 } t_loc;
 
 class Location
 {
-	std::string					path;
-	std::string					root;
-	std::string					index;
-	std::vector<std::string>	methods;
-	t_loc						parameters;
-	// static const int	bits = 8;
+	std::string path;
+	std::string root;
+	std::string index;
+	std::vector<std::string> methods;
+	t_loc parameters;
+	std::string pathCgi;
 
 	void foundParametrsForLocation(std::string source);
 	std::string deleteSpases(std::string source);
@@ -32,14 +33,16 @@ class Location
 	void parsingMethods(std::string source);
 	void parsingRoot(std::string source);
 	void parsingIndex(std::string source);
+	void parsingCgi(std::string source);
 
 public:
-	// InfoServer(void);
-	// ~InfoServer(void);
-	// InfoServer(const InfoServer &other);
-	// InfoServer	&operator=(const InfoServer &other);
 	void parsingStringForLocation(std::string source);
 	void printLocation();
+	std::string getRoot();
+	std::string getIndex();
+	std::string getPath();
+	std::string getPathCgi();
+	std::vector<std::string> getMethods();
 };
 
 #endif

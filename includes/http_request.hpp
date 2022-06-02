@@ -8,22 +8,23 @@
 #include <iostream>
 #include <string>
 
-//GET (request`s type) / (path)
-
 typedef enum t_enumType {
     Unknown = 0,
     GET,
     POST,
     DELETE
-}               s_enumType;
+} s_enumType;
 
 class http_request {
 public:
     http_request();
 
-    void parserHttp(const char*);
+    void parserHttp(const char *);
+
     const s_enumType &type() const;
+
     const std::string &url() const;
+
 private:
     void parserForRequest(std::string &);
 

@@ -15,8 +15,8 @@
 #include <iostream>
 #include <thread>
 #include "InfoServer.hpp"
-#include "StartMultipleServers.hpp"
 #include "../includes/Webserv.hpp"
+#include "../cgi/cgi.hpp"
 
 class Server {
 private:
@@ -30,21 +30,21 @@ private:
 
     std::vector<char> fav_icon_buffer;
 
-    bool socketInit(int server_socket);
-    void clientProcessing(int, std::string);
+    bool socketInit();
+
+    void clientProcessing(int, std::string, std::vector<InfoServer> servers);
 
 public:
     Server(int server_port);
-    ~Server();
-    Server &operator=(Server const &other);
-    //Server(Server const &other);
-    //Server(int const &port, int const &server_socket);
 
-//    TODO:!!!
-//    void setServerPort(int port);
-//    void setServerSocket(int server_socket);
-    bool serverStart(int server_socket);
+    ~Server();
+
+    Server &operator=(Server const &other);
+
+    bool serverStart(std::vector<InfoServer> servers);
+
     static void freeServerInfo(sockaddr_in &sa_serv);
+
     int getSocket();
 
     Server();
